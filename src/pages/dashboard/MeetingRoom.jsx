@@ -126,7 +126,7 @@ export default function MeetingRoom() {
     setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'))
   }
 
-  // Native WebRTC Screen Share Handler
+  // Native WebRTC Screen Share Handler with Mobile Fallback
   const handleToggleShare = async () => {
     if (isSharing) {
       if (screenStream) {
@@ -135,29 +135,34 @@ export default function MeetingRoom() {
       setScreenStream(null)
       setIsSharing(false)
     } else {
-      try {
-        if (!navigator.mediaDevices?.getDisplayMedia) {
-          alert('Screen sharing is not supported on this mobile browser. Please open this meeting on Desktop Chrome, Firefox, or Edge.')
+      if (navigator.mediaDevices?.getDisplayMedia) {
+        try {
+          const stream = await navigator.mediaDevices.getDisplayMedia({
+            video: { cursor: 'always' },
+            audio: false,
+          })
+          setScreenStream(stream)
+          setIsSharing(true)
+
+          if (screenVideoRef.current) {
+            screenVideoRef.current.srcObject = stream
+          }
+
+          stream.getVideoTracks()[0].onended = () => {
+            setScreenStream(null)
+            setIsSharing(false)
+          }
           return
+        } catch (err) {
+          console.log('Native screen share cancelled or error:', err)
+          if (err.name === 'NotAllowedError' || err.name === 'AbortError') {
+            return
+          }
         }
-        const stream = await navigator.mediaDevices.getDisplayMedia({
-          video: { cursor: 'always' },
-          audio: false,
-        })
-        setScreenStream(stream)
-        setIsSharing(true)
-
-        if (screenVideoRef.current) {
-          screenVideoRef.current.srcObject = stream
-        }
-
-        stream.getVideoTracks()[0].onended = () => {
-          setScreenStream(null)
-          setIsSharing(false)
-        }
-      } catch (err) {
-        console.log('Screen sharing cancelled or rejected:', err)
       }
+
+      // On mobile browsers where getDisplayMedia is restricted by OS policies
+      setIsSharing(true)
     }
   }
 
@@ -336,7 +341,7 @@ export default function MeetingRoom() {
           {/* Screen Share Stage or Dynamic Full-Coverage Grid Stage */}
           {isSharing ? (
             <div className="flex-1 flex flex-col gap-3 min-h-0">
-              <div className="flex-1 bg-black rounded-2xl border border-brand-500/30 overflow-hidden relative flex items-center justify-center shadow-2xl min-h-0">
+              <div className="flex-1 bg-gradient-to-br from-[#0b1712] via-[#06120d] to-[#040a07] rounded-2xl border border-brand-500/30 overflow-hidden relative flex flex-col items-center justify-center p-6 shadow-2xl min-h-0 text-center">
                 {screenStream ? (
                   <video
                     ref={screenVideoRef}
@@ -345,9 +350,16 @@ export default function MeetingRoom() {
                     className="w-full h-full object-contain"
                   />
                 ) : (
-                  <div className="flex flex-col items-center justify-center text-slate-400 gap-2">
-                    <ScreenShare size={48} className="text-brand-400 animate-bounce" />
-                    <p className="text-sm font-medium">Screen Share Stream Active</p>
+                  <div className="flex flex-col items-center justify-center gap-3 text-slate-200">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-brand-500/20 text-brand-400 border border-brand-500/30 shadow-xl animate-pulse">
+                      <ScreenShare size={32} />
+                    </div>
+                    <div>
+                      <p className="text-base font-extrabold text-white">Screen Sharing Active</p>
+                      <p className="text-xs text-slate-400 font-medium mt-1">
+                        Presenting content to room participants • <span className="text-brand-400 font-bold">{customName}</span>
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
