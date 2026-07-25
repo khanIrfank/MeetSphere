@@ -126,7 +126,7 @@ export default function MeetingRoom() {
     setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'))
   }
 
-  // Native WebRTC Screen Share Handler with Mobile Fallback
+  // Native WebRTC Screen Share Handler
   const handleToggleShare = async () => {
     if (isSharing) {
       if (screenStream) {
@@ -155,14 +155,13 @@ export default function MeetingRoom() {
           return
         } catch (err) {
           console.log('Native screen share cancelled or error:', err)
-          if (err.name === 'NotAllowedError' || err.name === 'AbortError') {
-            return
-          }
+          // User cancelled screen picker or denied permission -> return without sharing
+          return
         }
       }
 
-      // On mobile browsers where getDisplayMedia is restricted by OS policies
-      setIsSharing(true)
+      // If browser doesn't support getDisplayMedia
+      alert('Live Screen Sharing requires Google Chrome, Edge, or Firefox on Desktop. Mobile Web browsers restrict live screen capture due to mobile OS security policies.')
     }
   }
 
@@ -341,7 +340,7 @@ export default function MeetingRoom() {
           {/* Screen Share Stage or Dynamic Full-Coverage Grid Stage */}
           {isSharing ? (
             <div className="flex-1 flex flex-col gap-3 min-h-0">
-              <div className="flex-1 bg-gradient-to-br from-[#0b1712] via-[#06120d] to-[#040a07] rounded-2xl border border-brand-500/30 overflow-hidden relative flex flex-col items-center justify-center p-6 shadow-2xl min-h-0 text-center">
+              <div className="flex-1 bg-black rounded-2xl border border-brand-500/30 overflow-hidden relative flex flex-col items-center justify-center shadow-2xl min-h-0">
                 {screenStream ? (
                   <video
                     ref={screenVideoRef}
@@ -350,23 +349,18 @@ export default function MeetingRoom() {
                     className="w-full h-full object-contain"
                   />
                 ) : (
-                  <div className="flex flex-col items-center justify-center gap-3 text-slate-200">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-brand-500/20 text-brand-400 border border-brand-500/30 shadow-xl animate-pulse">
-                      <ScreenShare size={32} />
+                  <div className="flex flex-col items-center justify-center gap-3 text-slate-200 p-6 text-center">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/20 text-brand-400 border border-brand-500/30 shadow-xl animate-pulse">
+                      <ScreenShare size={28} />
                     </div>
-                    <div>
-                      <p className="text-base font-extrabold text-white">Screen Sharing Active</p>
-                      <p className="text-xs text-slate-400 font-medium mt-1">
-                        Presenting content to room participants • <span className="text-brand-400 font-bold">{customName}</span>
-                      </p>
-                    </div>
+                    <p className="text-sm font-extrabold text-white">Live Screen Share Stream Active</p>
                   </div>
                 )}
               </div>
-              {/* Thumbnail row for participants */}
-              <div className="h-28 flex items-center justify-center gap-2 overflow-x-auto py-1 shrink-0">
+              {/* Thumbnail row for participants (Fix: justify-start px-2 so user's live video box on left is NEVER clipped) */}
+              <div className="h-24 sm:h-28 flex items-center justify-start gap-2 overflow-x-auto px-2 py-1 shrink-0 scrollbar-none w-full">
                 {participantsList.map((p) => (
-                  <div key={p.id} className="w-32 sm:w-40 shrink-0 h-full">
+                  <div key={p.id} className="w-28 sm:w-36 shrink-0 h-full">
                     <ParticipantTile participant={p} mediaStream={mediaStream} facingMode={facingMode} />
                   </div>
                 ))}
