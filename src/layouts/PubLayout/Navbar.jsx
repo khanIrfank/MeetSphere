@@ -31,14 +31,16 @@ export default function Navbar() {
           : 'bg-surface/80 backdrop-blur-sm border-b border-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5 font-display font-extrabold text-lg text-theme-heading">
-          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-500 text-ink-950 shadow-md shadow-brand-500/20">
-            <Video size={18} strokeWidth={2.5} />
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 h-16 flex items-center justify-between gap-2">
+        {/* Brand Logo - Shows only icon on mobile (< sm), shows full text on sm+ */}
+        <Link to="/" className="flex items-center gap-2.5 font-display font-extrabold text-lg text-theme-heading shrink-0">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500 text-ink-950 shadow-md shadow-brand-500/20">
+            <Video size={19} strokeWidth={2.5} />
           </span>
-          <span>MeetSphere</span>
+          <span className="hidden sm:inline">MeetSphere</span>
         </Link>
 
+        {/* Desktop Nav Links */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-semibold">
           {links.map((l) => (
             <a key={l.label} href={l.to} className="text-theme-sub hover:text-brand-500 transition-colors">
@@ -47,6 +49,7 @@ export default function Navbar() {
           ))}
         </nav>
 
+        {/* Desktop Action Buttons & Theme Toggle */}
         <div className="flex items-center gap-3">
           <ThemeToggle />
           {isAuthenticated ? (
@@ -65,35 +68,49 @@ export default function Navbar() {
           )}
         </div>
 
+        {/* Mobile Hamburger Menu Toggle Button */}
         <button
-          className="md:hidden p-1 text-theme-heading hover:text-brand-500 transition-colors cursor-pointer"
+          className="md:hidden p-2 rounded-xl bg-elevated/80 text-theme-heading hover:text-brand-500 border border-soft transition-colors cursor-pointer"
           onClick={() => setOpen((v) => !v)}
           aria-label="Toggle menu"
         >
-          {open ? <X size={22} /> : <Menu size={22} />}
+          {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
+      {/* Mobile Drawer Menu */}
       {open && (
-        <div className="md:hidden border-t border-soft bg-elevated px-5 py-4 flex flex-col gap-4 shadow-xl">
+        <div className="md:hidden border-t border-soft bg-elevated px-5 py-4 flex flex-col gap-4 shadow-2xl animate-fade-up">
           {links.map((l) => (
             <a
               key={l.label}
               href={l.to}
               onClick={() => setOpen(false)}
-              className="text-sm text-theme-sub hover:text-brand-500 font-semibold"
+              className="text-sm text-theme-sub hover:text-brand-500 font-semibold py-1"
             >
               {l.label}
             </a>
           ))}
-          <div className="flex items-center gap-3 pt-2 border-t border-soft">
-            <ThemeToggle />
-            <Button size="sm" variant="outline" to="/login" className="flex-1 font-semibold">
-              Sign in
-            </Button>
-            <Button size="sm" to="/register" className="flex-1 font-bold">
-              Get started
-            </Button>
+          <div className="flex flex-col gap-3 pt-3 border-t border-soft">
+            <div className="flex items-center justify-between text-xs text-theme-sub font-semibold">
+              <span>Theme Preference</span>
+              <ThemeToggle />
+            </div>
+
+            {isAuthenticated ? (
+              <Button size="sm" onClick={() => { setOpen(false); navigate('/app') }} className="w-full font-bold justify-center">
+                Go to Dashboard <ArrowRight size={14} />
+              </Button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" to="/login" onClick={() => setOpen(false)} className="flex-1 font-semibold justify-center">
+                  Sign in
+                </Button>
+                <Button size="sm" to="/register" onClick={() => setOpen(false)} className="flex-1 font-bold justify-center">
+                  Get started
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}

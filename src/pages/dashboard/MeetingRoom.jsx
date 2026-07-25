@@ -156,6 +156,21 @@ export default function MeetingRoom() {
     p.isSelf ? { ...p, name: customName, muted, camOn } : p
   )
 
+  // Dynamic grid rows & columns based on participant count for 100% full screen coverage with zero whitespace
+  const count = participantsList.length
+  let gridColsRowsClass = 'grid-cols-1 grid-rows-1'
+  if (count === 2) {
+    gridColsRowsClass = 'grid-cols-1 sm:grid-cols-2 grid-rows-2 sm:grid-rows-1'
+  } else if (count <= 4) {
+    gridColsRowsClass = 'grid-cols-2 grid-rows-2'
+  } else if (count <= 6) {
+    gridColsRowsClass = 'grid-cols-2 sm:grid-cols-3 grid-rows-3 sm:grid-rows-2'
+  } else if (count <= 9) {
+    gridColsRowsClass = 'grid-cols-3 grid-rows-3'
+  } else {
+    gridColsRowsClass = 'grid-cols-3 sm:grid-cols-4 grid-rows-4'
+  }
+
   const handleSendMessage = (text) => {
     setMessages((prev) => [
       ...prev,
@@ -202,33 +217,33 @@ export default function MeetingRoom() {
       isLightMode ? 'bg-[#f0f7f3] text-slate-900' : 'bg-[#06120d] text-white'
     }`}>
       {/* Top Header Bar */}
-      <div className={`flex items-center justify-between px-4 py-2 shrink-0 text-xs border-b transition-colors ${
+      <div className={`flex items-center justify-between px-3 sm:px-4 py-2 shrink-0 text-xs border-b transition-colors ${
         isLightMode ? 'bg-white border-slate-200 shadow-sm' : 'bg-[#0d1f17] border-white/10'
       }`}>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-1.5 font-bold">
             <span className="flex h-5 w-5 items-center justify-center rounded bg-brand-500 text-ink-950 font-bold text-[10px]">
               MS
             </span>
-            <span className={isLightMode ? 'text-slate-900 font-extrabold' : 'text-slate-200'}>
+            <span className="hidden sm:inline font-extrabold">
               MeetSphere
             </span>
           </div>
 
           <button
             onClick={() => setInfoModalOpen(true)}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-colors ${
+            className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-colors ${
               isLightMode
                 ? 'bg-slate-100 hover:bg-slate-200 text-slate-800'
                 : 'bg-white/5 hover:bg-white/10 text-slate-300'
             }`}
           >
-            <Info size={14} className="text-brand-500" />
-            <span className="font-semibold truncate max-w-[200px]">{meetingData.title}</span>
+            <Info size={14} className="text-brand-500 shrink-0" />
+            <span className="font-semibold truncate max-w-[120px] sm:max-w-[200px]">{meetingData.title}</span>
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           {/* Theme Toggle Button in Room Top Bar */}
           <button
             onClick={toggleRoomTheme}
@@ -281,8 +296,8 @@ export default function MeetingRoom() {
 
       {/* Main Room Body Container */}
       <div className="flex-1 flex min-h-0 relative">
-        {/* Main Stage Video Area */}
-        <div className="flex-1 flex flex-col min-w-0 p-4 relative overflow-y-auto">
+        {/* Main Stage Video Area (100% full screen coverage with dynamic grid) */}
+        <div className="flex-1 flex flex-col min-w-0 p-2 sm:p-3 relative overflow-hidden">
           {/* Floating Emoji Reactions Overlay */}
           <div className="absolute inset-0 pointer-events-none z-40 overflow-hidden">
             {activeReactions.map((r) => (
@@ -296,10 +311,10 @@ export default function MeetingRoom() {
             ))}
           </div>
 
-          {/* Screen Share Stage or Grid Stage */}
+          {/* Screen Share Stage or Dynamic Full-Coverage Grid Stage */}
           {isSharing ? (
-            <div className="flex-1 flex flex-col gap-3">
-              <div className="flex-1 bg-black rounded-2xl border border-brand-500/30 overflow-hidden relative flex items-center justify-center shadow-2xl">
+            <div className="flex-1 flex flex-col gap-3 min-h-0">
+              <div className="flex-1 bg-black rounded-2xl border border-brand-500/30 overflow-hidden relative flex items-center justify-center shadow-2xl min-h-0">
                 {screenStream ? (
                   <video
                     ref={screenVideoRef}
@@ -315,17 +330,17 @@ export default function MeetingRoom() {
                 )}
               </div>
               {/* Thumbnail row for participants */}
-              <div className="h-28 flex items-center justify-center gap-3 overflow-x-auto py-1">
+              <div className="h-28 flex items-center justify-center gap-2 overflow-x-auto py-1 shrink-0">
                 {participantsList.map((p) => (
-                  <div key={p.id} className="w-40 shrink-0">
+                  <div key={p.id} className="w-32 sm:w-40 shrink-0 h-full">
                     <ParticipantTile participant={p} mediaStream={mediaStream} />
                   </div>
                 ))}
               </div>
             </div>
           ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-5xl">
+            <div className="flex-1 w-full h-full min-h-0 flex flex-col items-center justify-center">
+              <div className={`grid ${gridColsRowsClass} gap-2 sm:gap-3 w-full h-full flex-1 min-h-0`}>
                 {participantsList.map((p) => (
                   <ParticipantTile key={p.id} participant={p} mediaStream={mediaStream} />
                 ))}
@@ -336,7 +351,7 @@ export default function MeetingRoom() {
 
         {/* Chat Drawer Side Panel */}
         {chatOpen && (
-          <div className={`w-full max-w-xs border-l flex flex-col z-30 shadow-2xl transition-colors ${
+          <div className={`w-full sm:max-w-xs border-l flex flex-col z-30 shadow-2xl transition-colors ${
             isLightMode ? 'bg-white border-slate-200' : 'bg-[#121216] border-white/10'
           }`}>
             <ChatPanel
@@ -349,7 +364,7 @@ export default function MeetingRoom() {
         )}
       </div>
 
-      {/* Bottom Taskbar */}
+      {/* Bottom Taskbar (Responsive) */}
       <MeetingControls
         muted={muted}
         camOn={camOn}

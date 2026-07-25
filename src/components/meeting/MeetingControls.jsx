@@ -36,18 +36,18 @@ export default function MeetingControls({
   const [selectedCam, setSelectedCam] = useState('USB2.0 FHD WebCam')
 
   return (
-    <div className="relative bg-[#0d0d10] text-slate-200 border-t border-white/10 px-3 py-2 flex items-center justify-between shadow-2xl select-none z-30">
-      {/* Center Action Bar */}
-      <div className="flex items-center justify-center gap-1 sm:gap-2.5 mx-auto">
+    <div className="relative bg-[#0d0d10] text-slate-200 border-t border-white/10 px-2 sm:px-4 py-2 flex items-center justify-between shadow-2xl select-none z-30 gap-1 sm:gap-2">
+      {/* Scrollable Center Action Bar for Mobile Responsiveness */}
+      <div className="flex-1 flex items-center justify-start sm:justify-center gap-1 sm:gap-2.5 overflow-x-auto scrollbar-none py-0.5">
         {/* Audio Button with Dropdown Chevron */}
-        <div className="relative flex items-center">
+        <div className="relative flex items-center shrink-0">
           <button
             onClick={onToggleMute}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors hover:bg-white/10 ${
+            className={`flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-lg transition-colors hover:bg-white/10 cursor-pointer ${
               muted ? 'text-rose-400' : 'text-slate-200'
             }`}
           >
-            {muted ? <MicOff size={20} /> : <Mic size={20} />}
+            {muted ? <MicOff size={18} /> : <Mic size={18} />}
             <span className="text-[10px] font-medium hidden sm:block">
               {muted ? 'Unmute' : 'Mute'}
             </span>
@@ -57,7 +57,7 @@ export default function MeetingControls({
               setShowMicMenu(!showMicMenu)
               setShowCamMenu(false)
             }}
-            className="p-1 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-white/10"
+            className="p-0.5 text-slate-400 hover:text-slate-200 rounded hover:bg-white/10 cursor-pointer hidden sm:block"
           >
             <ChevronUp size={12} />
           </button>
@@ -74,7 +74,7 @@ export default function MeetingControls({
                   setShowMicMenu(false)
                 }}
                 className={`w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/10 ${
-                  selectedMic === 'Built-in Microphone' ? 'text-blue-400 font-semibold' : ''
+                  selectedMic === 'Built-in Microphone' ? 'text-brand-400 font-semibold' : ''
                 }`}
               >
                 Built-in Microphone & Speakers
@@ -85,7 +85,7 @@ export default function MeetingControls({
                   setShowMicMenu(false)
                 }}
                 className={`w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/10 ${
-                  selectedMic === 'External Headset' ? 'text-blue-400 font-semibold' : ''
+                  selectedMic === 'External Headset' ? 'text-brand-400 font-semibold' : ''
                 }`}
               >
                 External Headset (Bluetooth)
@@ -95,14 +95,14 @@ export default function MeetingControls({
         </div>
 
         {/* Video Button with Dropdown Chevron */}
-        <div className="relative flex items-center">
+        <div className="relative flex items-center shrink-0">
           <button
             onClick={onToggleCam}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors hover:bg-white/10 ${
+            className={`flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-lg transition-colors hover:bg-white/10 cursor-pointer ${
               !camOn ? 'text-rose-400' : 'text-slate-200'
             }`}
           >
-            {!camOn ? <VideoOff size={20} /> : <Video size={20} />}
+            {!camOn ? <VideoOff size={18} /> : <Video size={18} />}
             <span className="text-[10px] font-medium hidden sm:block">
               {camOn ? 'Stop Video' : 'Start Video'}
             </span>
@@ -112,7 +112,7 @@ export default function MeetingControls({
               setShowCamMenu(!showCamMenu)
               setShowMicMenu(false)
             }}
-            className="p-1 text-slate-400 hover:text-slate-200 rounded-lg hover:bg-white/10"
+            className="p-0.5 text-slate-400 hover:text-slate-200 rounded hover:bg-white/10 cursor-pointer hidden sm:block"
           >
             <ChevronUp size={12} />
           </button>
@@ -129,7 +129,7 @@ export default function MeetingControls({
                   setShowCamMenu(false)
                 }}
                 className={`w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/10 ${
-                  selectedCam === 'USB2.0 FHD WebCam' ? 'text-blue-400 font-semibold' : ''
+                  selectedCam === 'USB2.0 FHD WebCam' ? 'text-brand-400 font-semibold' : ''
                 }`}
               >
                 USB2.0 FHD WebCam
@@ -140,7 +140,7 @@ export default function MeetingControls({
                   setShowCamMenu(false)
                 }}
                 className={`w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/10 ${
-                  selectedCam === 'Integrated HD Camera' ? 'text-blue-400 font-semibold' : ''
+                  selectedCam === 'Integrated HD Camera' ? 'text-brand-400 font-semibold' : ''
                 }`}
               >
                 Integrated HD Camera
@@ -152,11 +152,11 @@ export default function MeetingControls({
         {/* Participants Button */}
         <button
           onClick={onOpenParticipants}
-          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-200 hover:bg-white/10 transition-colors relative"
+          className="flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-lg text-slate-200 hover:bg-white/10 transition-colors shrink-0 cursor-pointer"
         >
           <div className="relative">
-            <Users size={20} />
-            <span className="absolute -top-1 -right-2 text-[9px] bg-slate-700 text-white font-bold rounded-full px-1.5 py-0.2">
+            <Users size={18} />
+            <span className="absolute -top-1.5 -right-2.5 text-[9px] bg-brand-500 text-ink-950 font-extrabold rounded-full px-1.5 py-0.2">
               {participantCount}
             </span>
           </div>
@@ -166,23 +166,23 @@ export default function MeetingControls({
         {/* Chat Button */}
         <button
           onClick={onToggleChat}
-          className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors hover:bg-white/10 ${
-            chatOpen ? 'text-blue-400 bg-blue-500/10' : 'text-slate-200'
+          className={`flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-lg transition-colors hover:bg-white/10 shrink-0 cursor-pointer ${
+            chatOpen ? 'text-brand-400 bg-brand-500/15' : 'text-slate-200'
           }`}
         >
-          <MessageSquare size={20} />
+          <MessageSquare size={18} />
           <span className="text-[10px] font-medium hidden sm:block">Chat</span>
         </button>
 
         {/* React Button (Emoji Reactions) */}
-        <div className="relative">
+        <div className="relative shrink-0">
           <button
             onClick={() => setReactionsOpen(!reactionsOpen)}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors hover:bg-white/10 ${
-              reactionsOpen ? 'text-amber-400 bg-amber-500/10' : 'text-slate-200'
+            className={`flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-lg transition-colors hover:bg-white/10 cursor-pointer ${
+              reactionsOpen ? 'text-amber-400 bg-amber-500/15' : 'text-slate-200'
             }`}
           >
-            <Smile size={20} />
+            <Smile size={18} />
             <span className="text-[10px] font-medium hidden sm:block">React</span>
           </button>
           <ReactionsPopover
@@ -192,27 +192,27 @@ export default function MeetingControls({
           />
         </div>
 
-        {/* Share Screen Button (Green indicator style) */}
+        {/* Share Screen Button */}
         <button
           onClick={onToggleShare}
-          className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors ${
+          className={`flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-lg transition-colors shrink-0 cursor-pointer ${
             isSharing
               ? 'bg-rose-600 hover:bg-rose-500 text-white'
               : 'text-emerald-400 hover:bg-emerald-500/15'
           }`}
         >
-          <ScreenShare size={20} />
+          <ScreenShare size={18} />
           <span className="text-[10px] font-medium hidden sm:block">
             {isSharing ? 'Stop Share' : 'Share'}
           </span>
         </button>
 
-        {/* Meeting Info Button (Replaced Host Tools / More) */}
+        {/* Meeting Info Button */}
         <button
           onClick={onOpenMeetingInfo}
-          className="flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg text-slate-200 hover:bg-white/10 transition-colors"
+          className="flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-lg text-slate-200 hover:bg-white/10 transition-colors shrink-0 cursor-pointer"
         >
-          <Info size={20} className="text-blue-400" />
+          <Info size={18} className="text-brand-400" />
           <span className="text-[10px] font-medium hidden sm:block">Meeting Info</span>
         </button>
       </div>
@@ -220,9 +220,9 @@ export default function MeetingControls({
       {/* End / Leave Button on Right */}
       <button
         onClick={onLeave}
-        className="flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-xl shadow-lg transition-all hover:scale-105"
+        className="flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl shadow-lg transition-all shrink-0 cursor-pointer"
       >
-        <X size={16} />
+        <X size={15} />
         <span>End</span>
       </button>
     </div>
