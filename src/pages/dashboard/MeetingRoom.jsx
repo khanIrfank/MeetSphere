@@ -126,7 +126,7 @@ export default function MeetingRoom() {
     setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'))
   }
 
-  // Screen Share Handler
+  // Native WebRTC Screen Share Handler
   const handleToggleShare = async () => {
     if (isSharing) {
       if (screenStream) {
@@ -136,7 +136,14 @@ export default function MeetingRoom() {
       setIsSharing(false)
     } else {
       try {
-        const stream = await navigator.mediaDevices?.getDisplayMedia({ video: true, audio: true })
+        if (!navigator.mediaDevices?.getDisplayMedia) {
+          alert('Screen sharing is not supported on this mobile browser. Please open this meeting on Desktop Chrome, Firefox, or Edge.')
+          return
+        }
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: { cursor: 'always' },
+          audio: false,
+        })
         setScreenStream(stream)
         setIsSharing(true)
 
@@ -149,7 +156,7 @@ export default function MeetingRoom() {
           setIsSharing(false)
         }
       } catch (err) {
-        console.log('Screen sharing cancelled or unavailable:', err)
+        console.log('Screen sharing cancelled or rejected:', err)
       }
     }
   }
@@ -302,7 +309,7 @@ export default function MeetingRoom() {
           </div>
           <button
             onClick={handleToggleShare}
-            className="bg-black/20 hover:bg-black/40 text-black font-extrabold px-3 py-0.5 rounded text-xs transition-colors"
+            className="bg-black/20 hover:bg-black/40 text-black font-extrabold px-3 py-0.5 rounded text-xs transition-colors cursor-pointer"
           >
             Stop Share
           </button>
@@ -319,7 +326,7 @@ export default function MeetingRoom() {
               <div
                 key={r.id}
                 style={{ left: `${r.left}%` }}
-                className="absolute bottom-10 text-4xl animate-bounce transition-all duration-1000 opacity-90 drop-shadow-xl"
+                className="absolute bottom-10 text-4xl sm:text-5xl animate-bounce transition-all duration-1000 opacity-90 drop-shadow-2xl"
               >
                 {r.emoji}
               </div>
