@@ -35,6 +35,7 @@ export default function MeetingRoom() {
   // Room states
   const [muted, setMuted] = useState(initialMuted)
   const [camOn, setCamOn] = useState(!initialVideoOff)
+  const [facingMode, setFacingMode] = useState('user') // 'user' (Front Selfie) | 'environment' (Back Rear)
   const [chatOpen, setChatOpen] = useState(false)
   const [infoModalOpen, setInfoModalOpen] = useState(false)
   const [participantsModalOpen, setParticipantsModalOpen] = useState(false)
@@ -79,17 +80,26 @@ export default function MeetingRoom() {
     }
   }, [])
 
-  // Setup Webcam Stream
+  // Setup Webcam Stream with Front/Back facingMode support
   useEffect(() => {
     let streamTrack = null
     if (camOn) {
-      navigator.mediaDevices?.getUserMedia?.({ video: true, audio: true })
+      const videoConstraints = { facingMode: facingMode }
+      navigator.mediaDevices?.getUserMedia?.({ video: videoConstraints, audio: true })
         .then((s) => {
           streamTrack = s
           setMediaStream(s)
         })
         .catch(() => {
-          setMediaStream(null)
+          // Fallback if specific facingMode constraint isn't supported on device
+          navigator.mediaDevices?.getUserMedia?.({ video: true, audio: true })
+            .then((s) => {
+              streamTrack = s
+              setMediaStream(s)
+            })
+            .catch(() => {
+              setMediaStream(null)
+            })
         })
     } else {
       if (mediaStream) {
@@ -100,7 +110,7 @@ export default function MeetingRoom() {
     return () => {
       if (streamTrack) streamTrack.getTracks().forEach((t) => t.stop())
     }
-  }, [camOn])
+  }, [camOn, facingMode])
 
   // Handle Mute Track
   useEffect(() => {
@@ -110,6 +120,11 @@ export default function MeetingRoom() {
       })
     }
   }, [muted, mediaStream])
+
+  // Toggle Camera Facing Mode (Front <-> Back)
+  const handleToggleFacingMode = () => {
+    setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'))
+  }
 
   // Screen Share Handler
   const handleToggleShare = async () => {
@@ -333,7 +348,7 @@ export default function MeetingRoom() {
               <div className="h-28 flex items-center justify-center gap-2 overflow-x-auto py-1 shrink-0">
                 {participantsList.map((p) => (
                   <div key={p.id} className="w-32 sm:w-40 shrink-0 h-full">
-                    <ParticipantTile participant={p} mediaStream={mediaStream} />
+                    <ParticipantTile participant={p} mediaStream={mediaStream} facingMode={facingMode} />
                   </div>
                 ))}
               </div>
@@ -342,7 +357,7 @@ export default function MeetingRoom() {
             <div className="flex-1 w-full h-full min-h-0 flex flex-col items-center justify-center">
               <div className={`grid ${gridColsRowsClass} gap-2 sm:gap-3 w-full h-full flex-1 min-h-0`}>
                 {participantsList.map((p) => (
-                  <ParticipantTile key={p.id} participant={p} mediaStream={mediaStream} />
+                  <ParticipantTile key={p.id} participant={p} mediaStream={mediaStream} facingMode={facingMode} />
                 ))}
               </div>
             </div>
@@ -368,11 +383,13 @@ export default function MeetingRoom() {
       <MeetingControls
         muted={muted}
         camOn={camOn}
+        facingMode={facingMode}
         chatOpen={chatOpen}
         isSharing={isSharing}
         participantCount={participantsList.length}
         onToggleMute={() => setMuted((v) => !v)}
         onToggleCam={() => setCamOn((v) => !v)}
+        onToggleFacingMode={handleToggleFacingMode}
         onToggleChat={() => setChatOpen((v) => !v)}
         onToggleShare={handleToggleShare}
         onOpenParticipants={() => setParticipantsModalOpen(true)}

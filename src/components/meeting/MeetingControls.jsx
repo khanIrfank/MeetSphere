@@ -11,17 +11,20 @@ import {
   Info,
   X,
   ChevronUp,
+  RefreshCw,
 } from 'lucide-react'
 import ReactionsPopover from '../modals/ReactionsPopover'
 
 export default function MeetingControls({
   muted,
   camOn,
+  facingMode = 'user',
   chatOpen,
   isSharing,
   participantCount = 1,
   onToggleMute,
   onToggleCam,
+  onToggleFacingMode,
   onToggleChat,
   onToggleShare,
   onOpenParticipants,
@@ -33,7 +36,6 @@ export default function MeetingControls({
   const [showCamMenu, setShowCamMenu] = useState(false)
   const [reactionsOpen, setReactionsOpen] = useState(false)
   const [selectedMic, setSelectedMic] = useState('Built-in Microphone')
-  const [selectedCam, setSelectedCam] = useState('USB2.0 FHD WebCam')
 
   return (
     <div className="relative bg-[#0d0d10] text-slate-200 border-t border-white/10 px-2 sm:px-4 py-2 flex items-center justify-between shadow-2xl select-none z-30 gap-1 sm:gap-2">
@@ -117,37 +119,55 @@ export default function MeetingControls({
             <ChevronUp size={12} />
           </button>
 
-          {/* Cam Selection Popup */}
+          {/* Cam Selection & Flip Popup */}
           {showCamMenu && (
-            <div className="absolute bottom-12 left-0 z-50 bg-[#1e1e24] text-xs text-slate-200 border border-white/15 rounded-xl p-2 w-56 shadow-2xl animate-fade-up">
+            <div className="absolute bottom-12 left-0 z-50 bg-[#1e1e24] text-xs text-slate-200 border border-white/15 rounded-xl p-2 w-60 shadow-2xl animate-fade-up">
               <p className="text-[10px] font-semibold text-slate-400 px-2 py-1 uppercase tracking-wider">
-                Select a Camera
+                Select Camera Source
               </p>
               <button
                 onClick={() => {
-                  setSelectedCam('USB2.0 FHD WebCam')
+                  if (facingMode !== 'user') onToggleFacingMode?.()
                   setShowCamMenu(false)
                 }}
-                className={`w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/10 ${
-                  selectedCam === 'USB2.0 FHD WebCam' ? 'text-brand-400 font-semibold' : ''
+                className={`w-full flex items-center justify-between text-left px-2 py-1.5 rounded-lg hover:bg-white/10 ${
+                  facingMode === 'user' ? 'text-brand-400 font-semibold' : ''
                 }`}
               >
-                USB2.0 FHD WebCam
+                <span>Front Selfie Camera</span>
+                {facingMode === 'user' && <span className="text-[9px] bg-brand-500/20 text-brand-400 px-1.5 py-0.5 rounded font-bold">Active</span>}
               </button>
               <button
                 onClick={() => {
-                  setSelectedCam('Integrated HD Camera')
+                  if (facingMode !== 'environment') onToggleFacingMode?.()
                   setShowCamMenu(false)
                 }}
-                className={`w-full text-left px-2 py-1.5 rounded-lg hover:bg-white/10 ${
-                  selectedCam === 'Integrated HD Camera' ? 'text-brand-400 font-semibold' : ''
+                className={`w-full flex items-center justify-between text-left px-2 py-1.5 rounded-lg hover:bg-white/10 ${
+                  facingMode === 'environment' ? 'text-brand-400 font-semibold' : ''
                 }`}
               >
-                Integrated HD Camera
+                <span>Back Rear Camera</span>
+                {facingMode === 'environment' && <span className="text-[9px] bg-brand-500/20 text-brand-400 px-1.5 py-0.5 rounded font-bold">Active</span>}
               </button>
             </div>
           )}
         </div>
+
+        {/* Flip Camera Button (Direct 1-tap Front/Back camera toggle) */}
+        {camOn && (
+          <button
+            onClick={onToggleFacingMode}
+            title={`Switch to ${facingMode === 'user' ? 'Back' : 'Front'} Camera`}
+            className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg transition-colors hover:bg-white/10 shrink-0 cursor-pointer ${
+              facingMode === 'environment' ? 'text-brand-400 bg-brand-500/15' : 'text-slate-300'
+            }`}
+          >
+            <RefreshCw size={18} className={facingMode === 'environment' ? 'rotate-180 transition-transform duration-300' : ''} />
+            <span className="text-[10px] font-medium hidden sm:block">
+              {facingMode === 'user' ? 'Flip Cam' : 'Front Cam'}
+            </span>
+          </button>
+        )}
 
         {/* Participants Button */}
         <button

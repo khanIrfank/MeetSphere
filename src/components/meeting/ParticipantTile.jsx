@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { MicOff } from 'lucide-react'
 import Avatar from '../common/Avatar'
 
-export default function ParticipantTile({ participant, mediaStream }) {
+export default function ParticipantTile({ participant, mediaStream, facingMode = 'user' }) {
   const videoRef = useRef(null)
 
   useEffect(() => {
@@ -13,6 +13,9 @@ export default function ParticipantTile({ participant, mediaStream }) {
       }
     }
   }, [mediaStream, participant.isSelf, participant.camOn])
+
+  // Mirror front camera ('user'), do not mirror back camera ('environment')
+  const isFrontCam = facingMode === 'user'
 
   return (
     <div className="relative h-full w-full min-h-0 min-w-0 rounded-2xl bg-[#0a1510] border border-white/10 overflow-hidden flex items-center justify-center shadow-lg group">
@@ -28,7 +31,7 @@ export default function ParticipantTile({ participant, mediaStream }) {
           autoPlay
           playsInline
           muted
-          className="w-full h-full object-cover -scale-x-100"
+          className={`w-full h-full object-cover ${isFrontCam ? '-scale-x-100' : ''}`}
         />
       ) : participant.camOn ? (
         <div className="h-full w-full bg-gradient-to-br from-emerald-950 via-slate-900 to-black flex items-center justify-center relative overflow-hidden">
