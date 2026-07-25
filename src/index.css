@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Space Grotesk", "Inter", ui-sans-serif, sans-serif;
+  --font-body: "Inter", ui-sans-serif, sans-serif;
+
+  --color-brand-50: #ecfdf3;
+  --color-brand-100: #d1fae2;
+  --color-brand-200: #a4f3c7;
+  --color-brand-300: #6ce6a8;
+  --color-brand-400: #34d187;
+  --color-brand-500: #14b56d;
+  --color-brand-600: #0f7a4d;
+  --color-brand-700: #0d6140;
+  --color-brand-800: #0e4d35;
+  --color-brand-900: #0b3e2c;
+
+  --color-ink-950: #06120d;
+  --color-ink-900: #0a1712;
+  --color-ink-800: #10221b;
+  --color-ink-700: #17301f;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-marquee: marquee 30s linear infinite;
+  --animate-fade-up: fade-up .6s ease both;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+:root {
+  color-scheme: dark;
+  --bg: var(--color-ink-950);
+  --bg-elevated: var(--color-ink-900);
+  --border-soft: rgba(255,255,255,0.08);
+  --text-primary: #eafff3;
+  --text-muted: #9db8ac;
+}
+
+.theme-light {
+  color-scheme: light;
+  --bg: #f5faf7;
+  --bg-elevated: #ffffff;
+  --border-soft: rgba(10,40,25,0.15);
+  --text-primary: #0a1712;
+  --text-muted: #3b5c4e;
+}
+
+html, body, #root { height: 100%; overflow-x: hidden; }
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display { font-family: var(--font-display); }
+
+.bg-surface { background: var(--bg); }
+.bg-elevated { background: var(--bg-elevated); }
+.border-soft { border-color: var(--border-soft); }
+.text-muted { color: var(--text-muted); }
+
+/* High-Contrast Theme Text Classes */
+.theme-light .text-theme-heading {
+  color: #061f14 !important;
+}
+.theme-light .text-theme-body {
+  color: #1a382b !important;
+}
+.theme-light .text-theme-sub {
+  color: #3b5c4e !important;
+}
+
+:root:not(.theme-light) .text-theme-heading {
+  color: #ffffff !important;
+}
+:root:not(.theme-light) .text-theme-body {
+  color: #e2f5ec !important;
+}
+:root:not(.theme-light) .text-theme-sub {
+  color: #9db8ac !important;
+}
+
+::selection { background: var(--color-brand-400); color: #06120d; }
+
+*:focus-visible {
+  outline: 2px solid var(--color-brand-400);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Custom Visible Green Scrollbar for Meetings List and Chat */
+.scrollbar-thin::-webkit-scrollbar,
+.scrollbar-custom::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+.scrollbar-thin::-webkit-scrollbar-track,
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: rgba(16, 185, 129, 0.1);
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb,
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background: var(--color-brand-500);
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover,
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-600);
+}
