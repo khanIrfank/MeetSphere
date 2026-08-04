@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Video, Plus, CalendarClock, ScreenShare, History, Calendar, Sparkles, Users, ShieldCheck, Monitor } from 'lucide-react'
+import { Video, Plus, CalendarClock, ScreenShare, History, Calendar, Sparkles, Users, ShieldCheck, Monitor, Zap, AlertCircle, ArrowRight } from 'lucide-react'
 import { useMeetings } from '../../context/MeetingsContext'
 import { useAuth } from '../../context/AuthContext'
+import { usePlan } from '../../context/PlanContext'
 
 import ScheduleModal from '../../components/meeting/ScheduleModal'
 import NewMeetingPreviewModal from '../../components/modals/NewMeetingPreviewModal'
@@ -28,6 +29,7 @@ export default function DashboardHome() {
 
   const { meetings, meetingHistory, addMeeting } = useMeetings()
   const { user } = useAuth()
+  const { activePlan, hasActivePlan } = usePlan()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -36,6 +38,14 @@ export default function DashboardHome() {
   }, [])
 
   const handleAction = (key) => {
+    // If user tries to create or schedule a meeting without an active plan -> Redirect to /app/plans
+    if (key === 'new' || key === 'schedule') {
+      if (!hasActivePlan) {
+        navigate('/app/plans?subscribe=required')
+        return
+      }
+    }
+
     if (key === 'new') {
       setSelectedMeetingId(Date.now().toString())
       setNewMeetingModalOpen(true)
@@ -77,14 +87,46 @@ export default function DashboardHome() {
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-3 sm:py-5 space-y-3.5 max-h-[calc(100vh-2rem)] flex flex-col justify-between overflow-hidden select-none">
+      {/* Active Plan Missing Alert Banner */}
+      {!hasActivePlan && (
+        <div className="rounded-2xl bg-amber-500/10 border border-amber-500/30 p-3.5 flex items-center justify-between gap-3 text-xs shadow-sm shrink-0">
+          <div className="flex items-center gap-2.5">
+            <AlertCircle size={18} className="text-amber-400 shrink-0" />
+            <div>
+              <p className="font-extrabold text-amber-300">No Active Room Plan</p>
+              <p className="text-[11px] text-slate-300 font-medium">Please subscribe to a Room Plan to host and start live meetings.</p>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/app/plans?subscribe=required')}
+            className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition-all hover:scale-105 shrink-0 flex items-center gap-1 cursor-pointer"
+          >
+            <span>Subscribe Now</span>
+            <ArrowRight size={14} />
+          </button>
+        </div>
+      )}
+
       {/* Top Hero Banner */}
       <div className="rounded-2xl sm:rounded-3xl border border-brand-500/25 bg-gradient-to-r from-brand-500/10 via-elevated to-surface p-4 sm:p-5 shadow-lg grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 items-center shrink-0">
         {/* Left Side: Time, Date & Greeting */}
         <div className="flex flex-col items-start justify-center">
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-brand-500/15 text-brand-600 font-extrabold text-[10px] sm:text-[11px] mb-1.5 border border-brand-500/20">
-            <Sparkles size={12} />
-            <span>MeetSphere Live</span>
-          </span>
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-brand-500/15 text-brand-600 font-extrabold text-[10px] sm:text-[11px] border border-brand-500/20">
+              <Sparkles size={12} />
+              <span>MeetSphere Live</span>
+            </span>
+
+            {/* Active Room Plan Badge */}
+            <button
+              onClick={() => navigate('/app/plans')}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface border border-soft text-theme-heading font-extrabold text-[10px] hover:border-brand-500 transition-colors cursor-pointer"
+            >
+              <Zap size={11} className={hasActivePlan ? 'text-brand-500' : 'text-amber-400'} />
+              <span>{hasActivePlan ? `${activePlan.name} (${activePlan.maxUsers} Users)` : 'No Active Plan'}</span>
+            </button>
+          </div>
+
           <p className="font-display text-3xl sm:text-5xl font-extrabold tracking-tight tabular-nums text-theme-heading drop-shadow-sm leading-none">
             {now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </p>
@@ -103,8 +145,10 @@ export default function DashboardHome() {
               <Monitor size={20} />
             </div>
             <div className="text-left">
-              <p className="text-xs font-extrabold text-theme-heading">HD Video & Screen Share</p>
-              <p className="text-[10px] font-semibold text-theme-sub">Secure End-to-End Encrypted</p>
+              <p className="text-xs font-extrabold text-theme-heading">
+                {hasActivePlan ? `${activePlan.maxHosts} Hosts · ${activePlan.maxUsers} Max Users` : 'Subscribe for Room Host Capacity'}
+              </p>
+              <p className="text-[10px] font-semibold text-theme-sub">HD Video & End-to-End Encrypted</p>
             </div>
           </div>
         </div>
@@ -143,7 +187,7 @@ export default function DashboardHome() {
 
       {/* Meetings Card with Responsive Scrollable Tabs */}
       <div className="rounded-2xl sm:rounded-3xl border border-soft bg-elevated shadow-xl overflow-hidden flex-1 flex flex-col min-h-0">
-        {/* Tab Header Bar (Fix: Clean non-wrapping responsive tabs for small mobile screens) */}
+        {/* Tab Header Bar */}
         <div className="flex items-center justify-between px-3 sm:px-5 py-2.5 border-b border-soft bg-surface/50 shrink-0 gap-1.5 overflow-x-auto scrollbar-none">
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
@@ -181,7 +225,7 @@ export default function DashboardHome() {
           </button>
         </div>
 
-        {/* Tab Content Container with Custom Scrollbar */}
+        {/* Tab Content Container */}
         <div className="flex-1 overflow-y-auto scrollbar-custom p-2 min-h-0">
           {activeTab === 'scheduled' ? (
             <div>
@@ -202,6 +246,10 @@ export default function DashboardHome() {
                       </div>
                       <button
                         onClick={() => {
+                          if (!hasActivePlan) {
+                            navigate('/app/plans?subscribe=required')
+                            return
+                          }
                           setSelectedMeetingId(m.id)
                           setNewMeetingModalOpen(true)
                         }}
@@ -238,6 +286,10 @@ export default function DashboardHome() {
                       </div>
                       <button
                         onClick={() => {
+                          if (!hasActivePlan) {
+                            navigate('/app/plans?subscribe=required')
+                            return
+                          }
                           setSelectedMeetingId(h.meetingId.replace(/\s+/g, ''))
                           setNewMeetingModalOpen(true)
                         }}
