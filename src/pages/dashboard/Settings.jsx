@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useTheme } from '../../context/ThemeContext'
 import { usePlan } from '../../context/PlanContext'
 import { generateAndDownloadReceipt } from '../../utils/receiptGenerator'
+import DeactivatePlanModal from '../../components/modals/DeactivatePlanModal'
 
 export default function Settings() {
   const { user, logout } = useAuth()
@@ -17,6 +18,9 @@ export default function Settings() {
   const [name, setName] = useState(user?.name || '')
   const [savedSuccess, setSavedSuccess] = useState(false)
 
+  const [deactivateModalOpen, setDeactivateModalOpen] = useState(false)
+  const [planToDeactivate, setPlanToDeactivate] = useState(null)
+
   const handleSaveProfile = (e) => {
     e.preventDefault()
     setSavedSuccess(true)
@@ -26,6 +30,16 @@ export default function Settings() {
   const handleLogout = () => {
     logout()
     navigate('/')
+  }
+
+  const handleOpenDeactivateModal = (plan) => {
+    setPlanToDeactivate(plan)
+    setDeactivateModalOpen(true)
+  }
+
+  const handleConfirmDeactivate = (planId) => {
+    cancelPlan(planId)
+    setPlanToDeactivate(null)
   }
 
   return (
@@ -201,7 +215,7 @@ export default function Settings() {
                       <p className="text-xs text-brand-600 dark:text-brand-400 font-bold">👤 {plan.maxHosts} Hosts · 👥 {plan.maxUsers} Users</p>
                     </div>
                     <button
-                      onClick={() => cancelPlan(plan.id)}
+                      onClick={() => handleOpenDeactivateModal(plan)}
                       className="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500 text-rose-400 hover:text-white font-extrabold text-xs border border-rose-500/30 transition-all flex items-center gap-1 cursor-pointer shrink-0"
                     >
                       <Power size={13} />
@@ -291,6 +305,14 @@ export default function Settings() {
           </div>
         </div>
       )}
+
+      {/* Deactivate Confirmation Modal */}
+      <DeactivatePlanModal
+        open={deactivateModalOpen}
+        onClose={() => setDeactivateModalOpen(false)}
+        planToDeactivate={planToDeactivate}
+        onConfirmDeactivate={handleConfirmDeactivate}
+      />
     </div>
   )
 }

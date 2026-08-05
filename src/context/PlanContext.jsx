@@ -50,8 +50,8 @@ export function PlanProvider({ children }) {
               date: new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
               planId: plan.id,
               planName: plan.name,
-              amount: billingCycle === 'yearly' ? plan.yearlyPriceDisplay + '/yr' : plan.priceDisplay + '/mo',
-              paymentMethod: 'UPI',
+              amount: plan.isFree ? '₹0 (Free Plan)' : (billingCycle === 'yearly' ? plan.yearlyPriceDisplay + '/yr' : plan.priceDisplay + '/mo'),
+              paymentMethod: plan.isFree ? 'FREE ACTIVATION' : 'UPI',
               status: 'PAID',
               maxHosts: plan.maxHosts,
               maxUsers: plan.maxUsers,
@@ -85,11 +85,30 @@ export function PlanProvider({ children }) {
   const initiateCheckout = (planId) => {
     const plan = ROOM_PLANS.find((p) => p.id === planId)
     if (!plan) return
+
+    // If Free Plan -> Claim instantly without payment checkout!
+    if (plan.isFree || plan.monthlyPrice === 0) {
+      const freeReceipt = {
+        invoiceNumber: 'INV-' + Math.floor(100000 + Math.random() * 900000),
+        date: new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        planId: plan.id,
+        planName: plan.name,
+        amount: '₹0 (Free Plan)',
+        paymentMethod: 'FREE ACTIVATION',
+        status: 'PAID',
+        maxHosts: plan.maxHosts,
+        maxUsers: plan.maxUsers,
+        customerName: 'MeetSphere Host',
+      }
+      upgradePlan(plan.id, freeReceipt)
+      return
+    }
+
     setTargetPlanForCheckout(plan)
     setCheckoutModalOpen(true)
   }
 
-  // When user purchases a plan, ADD IT to purchased plans instantly
+  // When user purchases/claims a plan, ADD IT to purchased plans instantly
   const upgradePlan = (planId, receiptData = null) => {
     setPurchasedPlanIds((prev) => {
       if (prev.includes(planId)) return prev

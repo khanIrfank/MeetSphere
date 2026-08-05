@@ -1,5 +1,31 @@
 export const ROOM_PLANS = [
   {
+    id: 'free',
+    name: 'Free Room',
+    tagline: 'Forever free for quick 1:1 and personal calls',
+    maxHosts: 1,
+    maxUsers: 50,
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    priceDisplay: '₹0',
+    yearlyPriceDisplay: '₹0',
+    monthlyEquivDisplay: '₹0',
+    period: 'forever free',
+    yearlyPeriod: 'forever free',
+    badge: 'Forever Free',
+    isFree: true,
+    featured: false,
+    color: 'emerald',
+    features: [
+      '1 Host slot',
+      'Up to 50 Max Participants',
+      '40-minute group meeting limit',
+      'HD Video & Audio streaming',
+      'Screen Sharing & In-meeting Chat',
+      'Emoji Reactions & Raise Hand',
+    ],
+  },
+  {
     id: 'starter',
     name: 'Starter Room',
     tagline: 'Ideal for 1 Host with small interactive groups',
@@ -13,6 +39,7 @@ export const ROOM_PLANS = [
     period: '/ month',
     yearlyPeriod: '/ year',
     badge: '1 Host · 100 Users',
+    isFree: false,
     featured: false,
     color: 'emerald',
     features: [
@@ -38,6 +65,7 @@ export const ROOM_PLANS = [
     period: '/ month',
     yearlyPeriod: '/ year',
     badge: 'Most Popular',
+    isFree: false,
     featured: true,
     color: 'brand',
     features: [
@@ -63,6 +91,7 @@ export const ROOM_PLANS = [
     period: '/ month',
     yearlyPeriod: '/ year',
     badge: '3 Hosts · 500 Users',
+    isFree: false,
     featured: false,
     color: 'blue',
     features: [
@@ -88,6 +117,7 @@ export const ROOM_PLANS = [
     period: '/ month',
     yearlyPeriod: '/ year',
     badge: 'Maximum Capacity',
+    isFree: false,
     featured: false,
     color: 'purple',
     features: [
