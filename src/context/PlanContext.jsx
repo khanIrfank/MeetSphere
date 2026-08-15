@@ -1,83 +1,33 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { ROOM_PLANS } from '../data/plans'
+import {
+  setBillingCycle,
+  setCheckoutModalOpen,
+  initiateCheckoutAction,
+  upgradePlanAction,
+  cancelPlanAction,
+  syncMissingReceipts,
+} from '../redux/slices/planSlice'
 
 const PlanContext = createContext()
 
 export function PlanProvider({ children }) {
-  // Array of purchased plan IDs
-  const [purchasedPlanIds, setPurchasedPlanIds] = useState(() => {
-    try {
-      const saved = localStorage.getItem('meetsphere_purchased_plans')
-      return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
-    }
-  })
-
-  // Array of billing receipts history
-  const [paymentHistory, setPaymentHistory] = useState(() => {
-    try {
-      const saved = localStorage.getItem('meetsphere_payment_history')
-      return saved ? JSON.parse(saved) : []
-    } catch {
-      return []
-    }
-  })
-
-  const [billingCycle, setBillingCycle] = useState(() => {
-    return localStorage.getItem('meetsphere_billing_cycle') || 'monthly'
-  })
-
-  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false)
-  const [targetPlanForCheckout, setTargetPlanForCheckout] = useState(null)
-
-  // Sync receipts whenever purchasedPlanIds change so that every active plan has a valid receipt!
-  useEffect(() => {
-    localStorage.setItem('meetsphere_purchased_plans', JSON.stringify(purchasedPlanIds))
-
-    setPaymentHistory((prevHistory) => {
-      let updated = [...prevHistory]
-      let changed = false
-
-      purchasedPlanIds.forEach((planId) => {
-        const exists = updated.some((rcpt) => rcpt.planId === planId)
-        if (!exists) {
-          const plan = ROOM_PLANS.find((p) => p.id === planId)
-          if (plan) {
-            changed = true
-            updated.unshift({
-              invoiceNumber: 'INV-' + Math.floor(100000 + Math.random() * 900000),
-              date: new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-              planId: plan.id,
-              planName: plan.name,
-              amount: plan.isFree ? '₹0 (Free Plan)' : (billingCycle === 'yearly' ? plan.yearlyPriceDisplay + '/yr' : plan.priceDisplay + '/mo'),
-              paymentMethod: plan.isFree ? 'FREE ACTIVATION' : 'UPI',
-              status: 'PAID',
-              maxHosts: plan.maxHosts,
-              maxUsers: plan.maxUsers,
-              customerName: 'MeetSphere Host',
-            })
-          }
-        }
-      })
-
-      return changed ? updated : prevHistory
-    })
-  }, [purchasedPlanIds])
+  const dispatch = useDispatch()
+  const planState = useSelector((state) => state.plan || {})
+  const purchasedPlanIds = planState.purchasedPlanIds || []
+  const paymentHistory = planState.paymentHistory || []
+  const billingCycle = planState.billingCycle || 'monthly'
+  const checkoutModalOpen = planState.checkoutModalOpen || false
+  const targetPlanForCheckout = planState.targetPlanForCheckout || null
 
   useEffect(() => {
-    localStorage.setItem('meetsphere_payment_history', JSON.stringify(paymentHistory))
-  }, [paymentHistory])
+    dispatch(syncMissingReceipts())
+  }, [purchasedPlanIds, dispatch])
 
-  useEffect(() => {
-    localStorage.setItem('meetsphere_billing_cycle', billingCycle)
-  }, [billingCycle])
-
-  // Active plans list owned by the user
   const purchasedPlans = ROOM_PLANS.filter((p) => purchasedPlanIds.includes(p.id))
   const hasActivePlan = purchasedPlans.length > 0
 
-  // Primary active plan (highest capacity plan owned)
   const activePlan = purchasedPlans.length > 0
     ? [...purchasedPlans].sort((a, b) => b.maxUsers - a.maxUsers)[0]
     : null
@@ -86,7 +36,6 @@ export function PlanProvider({ children }) {
     const plan = ROOM_PLANS.find((p) => p.id === planId)
     if (!plan) return
 
-    // If Free Plan -> Claim instantly without payment checkout!
     if (plan.isFree || plan.monthlyPrice === 0) {
       const freeReceipt = {
         invoiceNumber: 'INV-' + Math.floor(100000 + Math.random() * 900000),
@@ -100,32 +49,19 @@ export function PlanProvider({ children }) {
         maxUsers: plan.maxUsers,
         customerName: 'MeetSphere Host',
       }
-      upgradePlan(plan.id, freeReceipt)
+      dispatch(upgradePlanAction({ planId: plan.id, receiptData: freeReceipt }))
       return
     }
 
-    setTargetPlanForCheckout(plan)
-    setCheckoutModalOpen(true)
+    dispatch(initiateCheckoutAction(planId))
   }
 
-  // When user purchases/claims a plan, ADD IT to purchased plans instantly
   const upgradePlan = (planId, receiptData = null) => {
-    setPurchasedPlanIds((prev) => {
-      if (prev.includes(planId)) return prev
-      return [...prev, planId]
-    })
-
-    if (receiptData) {
-      setPaymentHistory((prev) => {
-        const filtered = prev.filter((r) => r.invoiceNumber !== receiptData.invoiceNumber)
-        return [receiptData, ...filtered]
-      })
-    }
+    dispatch(upgradePlanAction({ planId, receiptData }))
   }
 
-  // Deactivate / Cancel an active plan
   const cancelPlan = (planId) => {
-    setPurchasedPlanIds((prev) => prev.filter((id) => id !== planId))
+    dispatch(cancelPlanAction(planId))
   }
 
   const canAccessRoomTier = (requiredPlanId) => {
@@ -142,9 +78,9 @@ export function PlanProvider({ children }) {
         paymentHistory,
         hasActivePlan,
         billingCycle,
-        setBillingCycle,
+        setBillingCycle: (cycle) => dispatch(setBillingCycle(cycle)),
         checkoutModalOpen,
-        setCheckoutModalOpen,
+        setCheckoutModalOpen: (open) => dispatch(setCheckoutModalOpen(open)),
         targetPlanForCheckout,
         initiateCheckout,
         upgradePlan,

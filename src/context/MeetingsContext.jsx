@@ -1,44 +1,34 @@
-import { createContext, useContext, useState } from 'react'
-import { initialMeetings, initialMeetingHistory, createMeeting } from '../data/meetings'
+import { createContext, useContext } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { addScheduledMeeting, deleteScheduledMeeting, addHistoryEntry } from '../redux/slices/meetingsSlice'
 
-const MeetingsContext = createContext(null)
+const MeetingsContext = createContext()
 
 export function MeetingsProvider({ children }) {
-  const [meetings, setMeetings] = useState(initialMeetings)
-  const [meetingHistory, setMeetingHistory] = useState(initialMeetingHistory)
-
-  const addMeeting = (data) => {
-    const meeting = createMeeting(data)
-    setMeetings((prev) => [...prev, meeting].sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time)))
-    return meeting
-  }
-
-  const removeMeeting = (id) => {
-    setMeetings((prev) => prev.filter((m) => m.id !== id))
-  }
-
-  const addHistoryEntry = (entry) => {
-    setMeetingHistory((prev) => [
-      {
-        id: `h-${Date.now()}`,
-        title: entry.title || 'Completed Meeting',
-        date: new Date().toISOString().slice(0, 10),
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        duration: entry.duration || 30,
-        host: entry.host || 'You',
-        meetingId: entry.meetingId || '849 2039 1042',
-        participantsCount: entry.participantsCount || 4,
-        status: 'Completed',
-      },
-      ...prev,
-    ])
-  }
+  const dispatch = useDispatch()
+  const { upcomingMeetings = [], meetingHistory = [] } = useSelector((state) => state.meetings || {})
 
   return (
-    <MeetingsContext.Provider value={{ meetings, meetingHistory, addMeeting, removeMeeting, addHistoryEntry }}>
+    <MeetingsContext.Provider
+      value={{
+        meetings: upcomingMeetings,
+        upcomingMeetings,
+        meetingHistory,
+        addMeeting: (m) => dispatch(addScheduledMeeting(m)),
+        addScheduledMeeting: (m) => dispatch(addScheduledMeeting(m)),
+        deleteScheduledMeeting: (id) => dispatch(deleteScheduledMeeting(id)),
+        addHistoryEntry: (entry) => dispatch(addHistoryEntry(entry)),
+      }}
+    >
       {children}
     </MeetingsContext.Provider>
   )
 }
 
-export const useMeetings = () => useContext(MeetingsContext)
+export function useMeetings() {
+  const context = useContext(MeetingsContext)
+  if (!context) {
+    throw new Error('useMeetings must be used within a MeetingsProvider')
+  }
+  return context
+}

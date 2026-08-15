@@ -24,41 +24,37 @@ import CheckoutModal from './components/modals/CheckoutModal'
 export default function App() {
   return (
     <PlanProvider>
-      <CheckoutModal />
-      <Routes>
-        {/* Public site */}
-        <Route element={<PubLayout />}>
-          <Route path="/" element={<Home />} />
-        </Route>
-
-        {/* Auth */}
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-        </Route>
-
-        <Route path="/unauthorized" element={<Unauthorized />} />
-
-        {/* Protected dashboard / user side */}
-        <Route
-          element={
-            <MeetingsProvider>
-              <ProtectedRoute />
-            </MeetingsProvider>
-          }
-        >
-          <Route element={<UserLayout />}>
-            <Route path="/app" element={<DashboardHome />} />
-            <Route path="/app/meetings" element={<MeetingsList />} />
-            <Route path="/app/plans" element={<PlanBilling />} />
-            <Route path="/app/settings" element={<Settings />} />
+      <MeetingsProvider>
+        <CheckoutModal />
+        <Routes>
+          {/* Public site */}
+          <Route element={<PubLayout />}>
+            <Route path="/" element={<Home />} />
           </Route>
-          <Route path="/app/room/:id" element={<MeetingRoom />} />
-        </Route>
 
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          {/* Auth */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+          </Route>
+
+          <Route path="/unauthorized" element={<Unauthorized />} />
+
+          {/* Protected dashboard / user side */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<UserLayout />}>
+              <Route path="/app" element={<DashboardHome />} />
+              <Route path="/app/meetings" element={<MeetingsList />} />
+              <Route path="/app/plans" element={<PlanBilling />} />
+              <Route path="/app/settings" element={<Settings />} />
+            </Route>
+            <Route path="/app/room/:id" element={<MeetingRoom />} />
+          </Route>
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </MeetingsProvider>
     </PlanProvider>
   )
 }

@@ -1,41 +1,36 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { loginAction, logoutAction, updateProfileAction } from '../redux/slices/authSlice'
 
-const AuthContext = createContext(null)
+const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const raw = localStorage.getItem('ms-user')
-    return raw ? JSON.parse(raw) : null
-  })
+  const dispatch = useDispatch()
+  const { user, isAuthenticated } = useSelector((state) => state.auth)
 
-  const login = (email) => {
-    const name = email.split('@')[0].replace(/[._]/g, ' ')
-    const fakeUser = {
-      name: name.replace(/\b\w/g, (c) => c.toUpperCase()) || 'User',
-      email,
-    }
-    localStorage.setItem('ms-user', JSON.stringify(fakeUser))
-    setUser(fakeUser)
-    return fakeUser
-  }
-
-  const register = (name, email) => {
-    const fakeUser = { name, email }
-    localStorage.setItem('ms-user', JSON.stringify(fakeUser))
-    setUser(fakeUser)
-    return fakeUser
+  const login = (userData) => {
+    dispatch(loginAction(userData))
   }
 
   const logout = () => {
-    localStorage.removeItem('ms-user')
-    setUser(null)
+    dispatch(logoutAction())
+  }
+
+  const updateProfile = (profileData) => {
+    dispatch(updateProfileAction(profileData))
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   )
 }
 
-export const useAuth = () => useContext(AuthContext)
+export function useAuth() {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}
