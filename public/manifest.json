@@ -1,4 +1,4 @@
-{
+﻿{
   "short_name": "MeetSphere",
   "name": "MeetSphere Video Meetings",
   "icons": [
@@ -10,6 +10,6 @@
   ],
   "start_url": ".",
   "background_color": "#06120d",
-  "theme_color": "#14b56d",
+  "theme_color": "#06b6d4",
   "display": "standalone"
 }
