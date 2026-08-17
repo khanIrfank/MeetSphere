@@ -1,11 +1,22 @@
-import { createSlice } from '@reduxjs/toolkit'
+﻿import { createSlice } from '@reduxjs/toolkit'
 
 const getSavedTheme = () => {
-  return localStorage.getItem('meetsphere_theme') || 'dark'
+  const saved = localStorage.getItem('meetsphere_theme')
+  if (saved) return saved
+  return 'light'
+}
+
+const initialTheme = getSavedTheme()
+if (typeof document !== 'undefined') {
+  if (initialTheme === 'light') {
+    document.documentElement.classList.add('theme-light')
+  } else {
+    document.documentElement.classList.remove('theme-light')
+  }
 }
 
 const initialState = {
-  theme: getSavedTheme(),
+  theme: initialTheme,
 }
 
 export const themeSlice = createSlice({
