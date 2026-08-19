@@ -93,7 +93,7 @@ export default function Hero() {
               icon={Download}
               className="font-bold border-brand-500/40 text-brand-600 dark:text-brand-400 hover:bg-brand-500/10 shadow-sm"
             >
-              Download APP (MeetSphere.apk)
+              {/* Download APP (MeetSphere.apk) */}
             </Button>
 
           </m.div>
