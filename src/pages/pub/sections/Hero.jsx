@@ -87,13 +87,15 @@ export default function Hero() {
             <Button
               size="lg"
               variant="outline"
-              href="/MeetSphere.apk"
-              download="MeetSphere.apk"
+              href="https://expo.dev/accounts/irfankhureshi/projects/meetsphere-mobile/builds/82062719-5c34-4f2e-ae2d-f998702b6815"
+              target="_blank"
+              rel="noopener noreferrer"
               icon={Download}
-              className="font-bold border-brand-500/40 text-brand-600 dark:text-brand-400 hover:bg-brand-500/10 shadow-sm underline"
+              className="font-bold border-brand-500/40 text-brand-600 dark:text-brand-400 hover:bg-brand-500/10 shadow-sm"
             >
               Download APP (MeetSphere.apk)
             </Button>
+
           </m.div>
 
           <m.form
