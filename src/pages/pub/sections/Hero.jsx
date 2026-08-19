@@ -1,7 +1,7 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion as m } from 'framer-motion'
-import { ArrowRight, Video, Users, Sparkles, Mic, ScreenShare, Zap } from 'lucide-react'
+import { ArrowRight, Video, Users, Sparkles, Mic, ScreenShare, Zap, Download } from 'lucide-react'
 import Button from '../../../components/common/Button'
 import FloatingBlob from '../../../components/common/FloatingBlob'
 import Avatar from '../../../components/common/Avatar'
@@ -30,12 +30,12 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative overflow-hidden  pb-20">
-      <FloatingBlob className="-top-32 -left-20" size={520} opacity={0.25} />
-      <FloatingBlob className="top-40 -right-24" size={440} color="brand-400" opacity={0.18} />
+    <section className="relative pt-24 sm:pt-32 pb-16 sm:pb-24 overflow-hidden px-4 sm:px-6 lg:px-12">
+      <FloatingBlob className="-top-24 -left-24 bg-brand-400/20 dark:bg-brand-500/10" />
+      <FloatingBlob className="top-1/2 -right-32 bg-cyan-400/15 dark:bg-cyan-500/10" />
 
-      <div className="relative max-w-8xl mx-auto px-5 sm:px-14 pt-10 sm:pt-16 pb-16 grid lg:grid-cols-12 gap-10 items-center">
-        {/* Left Column Text & Quick Join (5 Cols) */}
+      <div className="max-w-8xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+        {/* Left Column (5 Cols) */}
         <div className="lg:col-span-5 flex flex-col items-center lg:items-start text-center lg:text-left">
           <m.span
             variants={fadeUp}
@@ -76,13 +76,23 @@ export default function Hero() {
             initial="hidden"
             animate="show"
             custom={3}
-            className="mt-8 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto"
+            className="mt-8 flex flex-wrap items-center justify-center lg:justify-start gap-3 w-full"
           >
-            <Button size="lg" to={isAuthenticated ? '/app' : '/register'} icon={ArrowRight} className="w-full sm:w-auto font-bold shadow-lg shadow-brand-500/25">
+            <Button size="lg" to={isAuthenticated ? '/app' : '/register'} icon={ArrowRight} className="font-bold shadow-lg shadow-brand-500/25">
               {isAuthenticated ? 'Go to Dashboard' : 'Start Free Meeting'}
             </Button>
-            <Button size="lg" variant="outline" href="#about" className="w-full sm:w-auto font-semibold">
+            <Button size="lg" variant="outline" href="#about" className="font-semibold">
               Explore Features
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              href="/MeetSphere.apk"
+              download="MeetSphere.apk"
+              icon={Download}
+              className="font-bold border-brand-500/40 text-brand-600 dark:text-brand-400 hover:bg-brand-500/10 shadow-sm"
+            >
+              Download APP (MeetSphere.apk)
             </Button>
           </m.div>
 
@@ -153,7 +163,7 @@ export default function Hero() {
               {/* Overlay badges on Video */}
               <div className="absolute top-4 left-4 flex items-center gap-2 rounded-full bg-black/70 backdrop-blur-md px-3.5 py-1.5 border border-white/20">
                 <span className="h-2.5 w-2.5 rounded-full bg-rose-500 animate-ping" />
-                <span className="text-xs text-white font-extrabold tracking-wide">REC · 08:45</span>
+                <span className="text-xs text-white font-extrabold tracking-wide">REC • 08:45</span>
               </div>
 
               <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-emerald-600/90 backdrop-blur-md px-3 py-1.5 text-xs font-extrabold text-white shadow-lg">

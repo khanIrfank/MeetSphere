@@ -1,19 +1,19 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @theme {
   --font-display: "Space Grotesk", "Inter", ui-sans-serif, sans-serif;
   --font-body: "Inter", ui-sans-serif, sans-serif;
 
---color-brand-50:  #ecfeff;
---color-brand-100: #cffafe;
---color-brand-200: #a5f3fc;
---color-brand-300: #67e8f9;
---color-brand-400: #22d3ee;
---color-brand-500: #06b6d4;
---color-brand-600: #0891b2;
---color-brand-700: #0e7490;
---color-brand-800: #155e75;
---color-brand-900: #164e63;
+  --color-brand-50:  #ecfeff;
+  --color-brand-100: #cffafe;
+  --color-brand-200: #a5f3fc;
+  --color-brand-300: #67e8f9;
+  --color-brand-400: #22d3ee;
+  --color-brand-500: #06b6d4;
+  --color-brand-600: #0891b2;
+  --color-brand-700: #0e7490;
+  --color-brand-800: #155e75;
+  --color-brand-900: #164e63;
 
   --color-ink-950: #06120d;
   --color-ink-900: #0a1712;
@@ -23,6 +23,29 @@
   --animate-float: float 6s ease-in-out infinite;
   --animate-marquee: marquee 30s linear infinite;
   --animate-fade-up: fade-up .6s ease both;
+}
+
+.container-custom {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .container-custom {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-custom {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
 }
 
 @keyframes float {
@@ -121,10 +144,10 @@ body {
 }
 .scrollbar-thin::-webkit-scrollbar-thumb,
 .scrollbar-custom::-webkit-scrollbar-thumb {
-  background: var(--color-brand-500);
+  background: rgba(16, 185, 129, 0.4);
   border-radius: 9999px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover,
 .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-  background: var(--color-brand-600);
+  background: rgba(16, 185, 129, 0.7);
 }

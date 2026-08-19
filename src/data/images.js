@@ -19,4 +19,4 @@ export const testimonialPhotos = {
 
 // Local video files placed in public/
 export const meetingHeroVideo = '/meet.mp4'
-export const meetingFeatureVideo = '/AboutOurApp.mp4'
+export const meetingFeatureVideo = '/Preview.mp4'
