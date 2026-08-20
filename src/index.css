@@ -4,7 +4,7 @@
   --font-display: "Space Grotesk", "Inter", ui-sans-serif, sans-serif;
   --font-body: "Inter", ui-sans-serif, sans-serif;
 
-  --color-brand-50:  #ecfeff;
+  --color-brand-50: #ecfeff;
   --color-brand-100: #cffafe;
   --color-brand-200: #a5f3fc;
   --color-brand-300: #67e8f9;
@@ -49,37 +49,93 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-}
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   HERO GRADIENT - Edit these 3 hex values to customize colors
+   ============================================================ */
+
+/* Dark Theme Hero Gradient */
 :root {
   color-scheme: dark;
   --bg: var(--color-ink-950);
   --bg-elevated: var(--color-ink-900);
-  --border-soft: rgba(255,255,255,0.08);
+  --border-soft: rgba(255, 255, 255, 0.08);
   --text-primary: #eafff3;
   --text-muted: #9db8ac;
+
+  /* --- Hero Gradient Colors (Dark Theme) --- */
+  --hero-bg-top: #051c2e;
+  /* top dark navy */
+  --hero-bg-mid: #0e7490;
+  /* mid vibrant cyan */
+  --hero-bg-bottom: #06120d;
+  /* bottom dark (matches page bg) */
 }
 
+/* Light Theme Hero Gradient */
 .theme-light {
   color-scheme: light;
   --bg: #f5faf7;
   --bg-elevated: #ffffff;
-  --border-soft: rgba(10,40,25,0.15);
+  --border-soft: rgba(10, 40, 25, 0.15);
   --text-primary: #0a1712;
   --text-muted: #3b5c4e;
+
+  /* --- Hero Gradient Colors (Light Theme) --- */
+  --hero-bg-top: #07445c;
+  /* top dark teal */
+  --hero-bg-mid: #8fcad4;
+  /* mid lighter cyan */
+  --hero-bg-bottom: #ffffff;
+  /* bottom light (matches page bg) */
 }
 
-html, body, #root { height: 100%; overflow-x: hidden; }
+/* Hero section gradient applied via CSS class (works in both themes) */
+.hero-section {
+  background: linear-gradient(to bottom,
+      var(--hero-bg-top) 0%,
+      var(--hero-bg-mid) 50%,
+      var(--hero-bg-bottom) 100%);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow-x: hidden;
+}
 
 body {
   background: var(--bg);
@@ -88,20 +144,35 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.font-display { font-family: var(--font-display); }
+.font-display {
+  font-family: var(--font-display);
+}
 
-.bg-surface { background: var(--bg); }
-.bg-elevated { background: var(--bg-elevated); }
-.border-soft { border-color: var(--border-soft); }
-.text-muted { color: var(--text-muted); }
+.bg-surface {
+  background: var(--bg);
+}
+
+.bg-elevated {
+  background: var(--bg-elevated);
+}
+
+.border-soft {
+  border-color: var(--border-soft);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
 
 /* High-Contrast Theme Text Classes */
 .theme-light .text-theme-heading {
   color: #061f14 !important;
 }
+
 .theme-light .text-theme-body {
   color: #1a382b !important;
 }
+
 .theme-light .text-theme-sub {
   color: #3b5c4e !important;
 }
@@ -109,14 +180,19 @@ body {
 :root:not(.theme-light) .text-theme-heading {
   color: #ffffff !important;
 }
+
 :root:not(.theme-light) .text-theme-body {
   color: #e2f5ec !important;
 }
+
 :root:not(.theme-light) .text-theme-sub {
   color: #9db8ac !important;
 }
 
-::selection { background: var(--color-brand-400); color: #06120d; }
+::selection {
+  background: var(--color-brand-400);
+  color: #06120d;
+}
 
 *:focus-visible {
   outline: 2px solid var(--color-brand-400);
@@ -124,29 +200,35 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
 
-/* Custom Visible Green Scrollbar for Meetings List and Chat */
+/* Custom Scrollbar */
 .scrollbar-thin::-webkit-scrollbar,
 .scrollbar-custom::-webkit-scrollbar {
   width: 7px;
   height: 7px;
 }
+
 .scrollbar-thin::-webkit-scrollbar-track,
 .scrollbar-custom::-webkit-scrollbar-track {
   background: rgba(16, 185, 129, 0.1);
   border-radius: 9999px;
 }
+
 .scrollbar-thin::-webkit-scrollbar-thumb,
 .scrollbar-custom::-webkit-scrollbar-thumb {
   background: rgba(16, 185, 129, 0.4);
   border-radius: 9999px;
 }
+
 .scrollbar-thin::-webkit-scrollbar-thumb:hover,
 .scrollbar-custom::-webkit-scrollbar-thumb:hover {
   background: rgba(16, 185, 129, 0.7);
