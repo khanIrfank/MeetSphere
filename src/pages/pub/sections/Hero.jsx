@@ -92,7 +92,7 @@ export default function Hero() {
           <Button
             size="lg"
             variant="outline"
-            href="https://github.com/khanIrfank/MeetSphere/releases/download/v1.0.2/MeetSphere.5.apk"
+            href="https://github.com/khanIrfank/MeetSphere/releases/download/v1.0.3/MeetSphere.6.apk"
             target="_blank"
             rel="noopener noreferrer"
             icon={Download}
